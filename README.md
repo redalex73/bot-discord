@@ -1,0 +1,1 @@
+Este es un bot que he creado para un proyecto personal. Es para un servidor de discord de una comunidad. El bot obtiene el ultimo tweet y post de instagram (todavia por probar este ultimo), y envia una notificacion al canal especificado

@@ -69,10 +69,10 @@ async def fetch_latest_tweet():
                     tweet_url = f"https://twitter.com/{TWITTER_USERNAME}/status/{latest_tweet_data['id']}"
 
                     # Verificar si es un retweet
-                    if 'referenced_tweets' in latest_tweet_data:
-                        tweet_type = "retweet"
-                    else:
-                        tweet_type = "tweet"
+                    is_retweet = any(
+                        ref_tweet.get('type') == "retweeted"
+                        for ref_tweet in latest_tweet_data.get('referenced_tweets', [])
+                    )
 
                     if latest_tweet != last_tweet:
                         last_tweet = latest_tweet
@@ -83,10 +83,14 @@ async def fetch_latest_tweet():
                         if guild:
                             channel = discord.utils.get(guild.channels, id=TWITTER_CHANNEL_ID)
                             if channel:
-                                if tweet_type == "retweet":
-                                    await send_message_to_channel(channel, f"¡Nuevo retweet de @{TWITTER_USERNAME}!\n{tweet_url}")
+                                if is_retweet:
+                                    await send_message_to_channel(
+                                        channel, f"¡Nuevo retweet de @{TWITTER_USERNAME}!\n{tweet_url}"
+                                    )
                                 else:
-                                    await send_message_to_channel(channel, f"Nuevo tweet de @{TWITTER_USERNAME}:\n{tweet_url}")
+                                    await send_message_to_channel(
+                                        channel, f"Nuevo tweet de @{TWITTER_USERNAME}:\n{tweet_url}"
+                                    )
         except Exception as e:
             print(f"Error al buscar tweets: {e}")
 

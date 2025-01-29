@@ -91,7 +91,7 @@ async def fetch_latest_tweet():
             print(f"Error al buscar tweets: {e}")
 
         # Esperar 1 minuto antes de comprobar de nuevo
-        await asyncio.sleep(60)
+        await asyncio.sleep(120)
 
 # Función para buscar la última publicación de Instagram usando la API de RapidAPI
 async def fetch_latest_instagram_post():
@@ -125,13 +125,13 @@ async def fetch_latest_instagram_post():
                             await send_message_to_channel(channel, f"Mira el último post de @{INSTAGRAM_USERNAME}\n{post_url}")
         except Exception as e:
             print(f"Error al buscar publicaciones de Instagram: {e}")
-        await asyncio.sleep(60)  # Comprobar cada 60 segundos
+        await asyncio.sleep(120)  # Comprobar cada 120 segundos
 
 # Función para mantener el bot despierto
 async def keep_alive():
     while True:
         print("El bot está activo...")  # Imprime en consola cada 60 segundos
-        await asyncio.sleep(60)  # Espera 60 segundos
+        await asyncio.sleep(120)  # Espera 120 segundos
 
 @client.event
 async def on_ready():

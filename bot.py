@@ -9,19 +9,15 @@ from threading import Thread
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 DISCORD_GUILD_ID = int(os.environ['DISCORD_GUILD_ID'])  # Reemplaza con el ID de tu servidor
 TWITTER_CHANNEL_ID = int(os.environ['TWITTER_CHANNEL_ID'])  # ID del canal de notificaciones de Twitter
-INSTAGRAM_CHANNEL_ID = int(os.environ['INSTAGRAM_CHANNEL_ID'])  # ID del canal de notificaciones de Instagram
 TWITTER_USERNAME = os.environ['TWITTER_USERNAME']  # Nombre de usuario de Twitter
-INSTAGRAM_USERNAME = os.environ['INSTAGRAM_USERNAME']  # Nombre de usuario de Instagram
 
 # Clave de Bearer Token de Twitter API y RapidAPI para Instagram
 BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']
-INSTAGRAM_API_KEY = os.environ['INSTAGRAM_API']  # Añadir tu clave API de RapidAPI aquí
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 
 last_tweet = ""  # Almacena el último tweet para evitar duplicados
-last_instagram_post = ""  # Almacena la última publicación de Instagram
 
 # Configuración del servidor HTTP
 app = Flask('')
@@ -92,40 +88,6 @@ async def fetch_latest_tweet():
 
         # Esperar 1 minuto antes de comprobar de nuevo
         await asyncio.sleep(120)
-
-# Función para buscar la última publicación de Instagram usando la API de RapidAPI
-async def fetch_latest_instagram_post():
-    global last_instagram_post
-    while True:
-        try:
-            url = f"https://instagram-scraper-api2.p.rapidapi.com/profile/{INSTAGRAM_USERNAME}/"
-            headers = {
-                "X-RapidAPI-Host": "instagram-scraper-api2.p.rapidapi.com",
-                "X-RapidAPI-Key": INSTAGRAM_API_KEY  # Usar la clave de RapidAPI aquí
-            }
-            response = requests.get(url, headers=headers)
-            data = response.json()
-
-            # Verificar si los datos contienen publicaciones
-            if 'data' in data and len(data['data']) > 0:
-                latest_post = data['data'][0]['shortcode']  # Obtener el shortcode de la última publicación
-                post_url = f"https://www.instagram.com/p/{latest_post}/"
-
-                if latest_post != last_instagram_post:
-                    last_instagram_post = latest_post
-
-                    # Depuración: Imprimir el último post detectado
-                    print(f"Última publicación de Instagram detectada: {post_url}")  # Depuración
-
-                    # Enviar la publicación al canal de Instagram
-                    guild = discord.utils.get(client.guilds, id=DISCORD_GUILD_ID)
-                    if guild:
-                        channel = discord.utils.get(guild.channels, id=INSTAGRAM_CHANNEL_ID)
-                        if channel:
-                            await send_message_to_channel(channel, f"Mira el último post de @{INSTAGRAM_USERNAME}\n{post_url}")
-        except Exception as e:
-            print(f"Error al buscar publicaciones de Instagram: {e}")
-        await asyncio.sleep(120)  # Comprobar cada 120 segundos
 
 # Función para mantener el bot despierto
 async def keep_alive():
